@@ -61,6 +61,7 @@ ecdsa
  ```
 
 BitQuery for MAP data for a given url
+
 ```json
 {
   "v": 3,
@@ -76,6 +77,7 @@ BitQuery for MAP data for a given url
 ```
 
 BitQuery for MAP data for a given url from a given author
+
 ```json
 {
   "v": 3,
@@ -93,6 +95,7 @@ BitQuery for MAP data for a given url from a given author
 }
 ```
 
+The response would look something like this:
 ```json
 {
   "c": [{
@@ -116,15 +119,18 @@ BitQuery for MAP data for a given url from a given author
 }
 ```
 
-Processing the Output
+Transforming the Output
+
+_Later this can be done automatically by a planaria node or js library_
+
 ```javascript
-  let protocolNames = {
+  let protocolSchema = {
     "19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut": "B",
     "1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5": "MAP",
     "15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva": "AUTHOR_IDENTITY"
   }
 
-  let schema = {
+  let querySchema = {
     "B": [
       {"content": "string"},
       {"content-type": "string"},
@@ -151,7 +157,7 @@ Processing the Output
     let tx = data[0]
 
     // We always know what the first protocol is, it's always in s1
-    let procolName = protocolNames[tx.s1]
+    let procolName = protocolSchema[tx.s1]
 
     // Flag for handling pipes
     let setProtocol = true
@@ -164,6 +170,7 @@ Processing the Output
         // ours are all strings... so we just push them into an array
         dataObj[protocolName] = {}
         setProtocol = false
+        relativeIndex = 0
       }
 
       // if the value is a pipe, set the name again and continue without pushing
@@ -178,7 +185,7 @@ Processing the Output
       }
 
       // push the value to the current schema key
-      dataObj[protocolName].push({Object.keys(schemas[protocolName][relativeIndex++])[0]: tx[key]})
+      dataObj[protocolName].push({Object.keys(querySchema[protocolName][relativeIndex++])[0]: tx[key]})
     }
   }
 
