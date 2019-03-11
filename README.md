@@ -1,11 +1,11 @@
 # Magic Attribute Protocol
-### A system for mapping arbitrary hyper media to a global identifier, or anything.
+### A system for mapping arbitrary hyper media to a global identifier.
 
 Prefix: *1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5*
 
 ## Usage
 
-```
+```markdown
 <OP_RETURN | <input>>
 MAP
 <SET | DELETE>
@@ -27,11 +27,14 @@ MAP is designed to be chained together with other OP_RETURN micro-protocols. The
     B | MAP | AUTHOR_IDENTITY
 
 More on protocol piping:
-https://github.com/unwriter/Bitcom/issues/2
+- https://github.com/unwriter/Bitcom/issues/2
+
+More on Autor Identity Protocol:
+- https://??????
 
 # Examples
-## SET: Comment on a URL
-Here is the full piped OP_RETURN sequence for mapping B data to a global ID.
+## SET
+In this example we will use `SET` to comment on a URL with an identity (not using the sender address as the identity's public key). Here is the full piped OP_RETURN sequence for mapping B data to a global ID, `url` = `http://map.sv`.
 
 ```
 OP_RETURN B | MAP SET 'url' 'https://map.sv' | AUTHOR_IDENTITY_PROTOL
@@ -39,7 +42,7 @@ OP_RETURN B | MAP SET 'url' 'https://map.sv' | AUTHOR_IDENTITY_PROTOL
 
 A more detailed view of the same transaction. Each line here is a new pushdata:
 
-```
+```markdown
 OP_RETURN
 19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut (B)
 "## Hello small world"
@@ -57,8 +60,80 @@ ecdsa
 <signature>
  ```
 
-## Setting Multiple Keys: User Profile
+BitQuery for MAP data for a given url
+```json
+{
+  "v": 3,
+  "q": {
+    "find": {
+      "$and": [
+        {"$text": {"$search": "\"1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5\" \"url\" \"https:\/\/map.sv\""}}
+      ]
+    },
+    "limit": 10
+  }
+}
+```
+
+BitQuery for MAP data for a given url from a given author
+```json
+{
+  "v": 3,
+  "q": {
+    "find": {
+      "$and": [
+        {"$text": {"$search": "\"1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5\" \"url\" \"https:\/\/map.sv\" \"15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva\" \"<pukey>\""}}
+      ]
+    },
+    "limit": 10
+  }
+}
+```
+
+A response will look like this on a babel planaria:
+```
+{
+  t: [{
+    tx: {
+      h: <txhash>
+    },
+    in: [{
+      e: {
+        a: <address>
+      }
+    }],
+    out: [{e.a.address}],
+    blk: {
+      t: <timestamp>,
+      height: <blockheight>,
+    }
+  }]
+}
+```
+
+Processing the Output
+```javascript
+  let response = fetchBitDB(query)
+  for (let x = 0; x < response.data.length; x++) {
+    let tx = response.data[0]
+    // Loop over op_return data
+    for (let y = 0; y < tx.out.length; y++) {
+      if (tx.out[y]. === '|
+    }
+  }
+```
+
+## SET Multiple Keys at once
 Keys and values can be repeated to set multiple attributes at once:
+```
+MAP
+SET
+<key>
+<val>
+<key>
+<val>
+```
+more detailed example:
 ```
 1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5 (MAP)
 SET
