@@ -82,45 +82,97 @@ BitQuery for MAP data for a given url from a given author
   "q": {
     "find": {
       "$and": [
-        {"$text": {"$search": "\"1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5\" \"url\" \"https:\/\/map.sv\" \"15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva\" \"<pukey>\""}}
+        {"$text": {"$search": "\"1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5\" \"url\" \"https:\/\/twitter.com\" \"15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva\" \"1HQ8momxTp9MYkzDLy9bFMUQgnba189qZE\""}}
       ]
     },
-    "limit": 10
+    "limit": 1
+  },
+ "r": {
+    "f": "[.[] | .out[0] ]"
   }
 }
 ```
 
-A response will look like this on a babel planaria:
-```
+```json
 {
-  t: [{
-    tx: {
-      h: <txhash>
-    },
-    in: [{
-      e: {
-        a: <address>
-      }
-    }],
-    out: [{e.a.address}],
-    blk: {
-      t: <timestamp>,
-      height: <blockheight>,
-    }
-  }]
+  "c": [{
+    "i": 0,
+    "b0": { "op": 106 },
+    "s1": "19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut",
+    "s2": "## Hello small world",
+    "s3": "text/markdown",
+    "s4": "utf8",
+    "s5": "|",
+    "s6": "1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5",
+    "s7": "url",
+    "s8": "https://twitter.com/",
+    "s9": "|",
+    "s10": "15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva",
+    "s11": "ecdsa",
+    "s12": "1HQ8momxTp9MYkzDLy9bFMUQgnba189qZE",
+    "s13": "<signature>"
+  }],
+  "u": []
 }
 ```
+
+my goal is to make this:
+
+{
+  B: {
+
+  },
+  MAP: {
+
+  },
+  AUTHOR: {
+
+  }
+}
 
 Processing the Output
 ```javascript
+  let protocolNames = {
+    "19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut": "B",
+    "1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5": "MAP",
+    "15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva": "AUTHOR_IDENTITY"
+  }
+
   let response = fetchBitDB(query)
-  for (let x = 0; x < response.data.length; x++) {
-    let tx = response.data[0]
-    // Loop over op_return data
-    for (let y = 0; y < tx.out.length; y++) {
-      if (tx.out[y]. === '|
+  let breaks = []
+  let data = u.concat(c)
+  let dataObj = {}
+  // Loop over transactions
+  for (let x = 0; x < data.length; x++) {
+    let tx = data[0]
+
+    // We always know what the first protocol is, it's always in s1
+    let procolName = protocolNames[tx.s1]
+
+    // Flag for handling pipes
+    let setProtocol = true
+
+    // Loop over op_return pushdatas
+    for (key of Object.keys(tx)) {
+      if (setProtocol) {
+
+        // here we could check schema and assign the appropriate encoding for each value
+        // ours are all strings... so we just push them into an array
+        dataObj[protocolName] = {}
+        setProtocol = false
+      }
+
+      // if the value is a pipe, set the name again and continue without pushing
+      if (tx[key] === '|') {
+        setProtocol = true
+        continue
+      }
+      // push the value to the current
+      dataObj[protocolName].push(tx[key])
     }
   }
+
+
 ```
 
 ## SET Multiple Keys at once
