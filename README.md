@@ -68,7 +68,7 @@ BitQuery for MAP data for a given url
   "q": {
     "find": {
       "$and": [
-        {"$text": {"$search": "\"1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5\" \"url\" \"https:\/\/map.sv\""}}
+        {"$text": {"$search": "\"1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5\" \"SET\" \"url\" \"https:\/\/map.sv\""}}
       ]
     },
     "limit": 10
@@ -84,7 +84,7 @@ BitQuery for MAP data for a given url from a given author
   "q": {
     "find": {
       "$and": [
-        {"$text": {"$search": "\"1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5\" \"url\" \"https:\/\/twitter.com\" \"15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva\" \"1HQ8momxTp9MYkzDLy9bFMUQgnba189qZE\""}}
+        {"$text": {"$search": "\"1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5\" \"SET\" \"url\" \"https:\/\/twitter.com\" \"15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva\" \"1HQ8momxTp9MYkzDLy9bFMUQgnba189qZE\""}}
       ]
     },
     "limit": 1
@@ -107,13 +107,14 @@ The response would look something like this:
     "s4": "utf8",
     "s5": "|",
     "s6": "1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5",
-    "s7": "url",
-    "s8": "https://twitter.com/",
-    "s9": "|",
-    "s10": "15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva",
-    "s11": "ecdsa",
-    "s12": "1HQ8momxTp9MYkzDLy9bFMUQgnba189qZE",
-    "s13": "<signature>"
+    "s7": "SET",
+    "s8": "url",
+    "s9": "https://twitter.com/",
+    "s10": "|",
+    "s11": "15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva",
+    "s12": "ecdsa",
+    "s13": "1HQ8momxTp9MYkzDLy9bFMUQgnba189qZE",
+    "s14": "<signature>"
   }],
   "u": []
 }
@@ -137,8 +138,11 @@ _Later this can be done automatically by a planaria node or js library_
       {"encoding": "string"}
     ],
     "MAP": [
-      {"key": "string"},
-      {"val": "string"},
+      {"cmd": "string"},
+      [
+        {"key": "string"},
+        {"val": "string"}
+      ]
     ],
     "AUTHOR": [
       {"algo": "string"},
@@ -147,11 +151,15 @@ _Later this can be done automatically by a planaria node or js library_
     }]
   }
 
+  // query bitdb
   let response = fetchBitDB(query)
 
-  let breaks = []
+  // combine confirmed and unconfirmed transactions
   let data = u.concat(c)
+
+  // This will be out nicely formatted response object
   let dataObj = {}
+
   // Loop over transactions
   for (let x = 0; x < data.length; x++) {
     let tx = data[0]
@@ -160,22 +168,20 @@ _Later this can be done automatically by a planaria node or js library_
     let procolName = protocolSchema[tx.s1]
 
     // Flag for handling pipes
-    let setProtocol = true
     let relativeIndex = 0
+
     // Loop over op_return pushdatas
     for (key of Object.keys(tx)) {
-      if (setProtocol) {
 
+      if (!relativeIndex) {
         // here we could check schema and assign the appropriate encoding for each value
         // ours are all strings... so we just push them into an array
-        dataObj[protocolName] = {}
-        setProtocol = false
-        relativeIndex = 0
+        dataObj[protocolName] = []
       }
 
       // if the value is a pipe, set the name again and continue without pushing
       if (tx[key] === '|') {
-        setProtocol = true
+        relativeIndex = 0
         continue
       }
 
@@ -184,8 +190,18 @@ _Later this can be done automatically by a planaria node or js library_
         continue
       }
 
-      // push the value to the current schema key
-      dataObj[protocolName].push({Object.keys(querySchema[protocolName][relativeIndex++])[0]: tx[key]})
+      // get the key,value pair from this query schema
+      let value = Object.keys(querySchema[protocolName][relativeIndex++])
+
+      if (value instanceof Array) {
+        for (let push of value) {
+          // increment the relativeIndex and push
+          dataObj[protocolName].push({push[0]: tx[key]})
+        }
+        continue
+      }
+      // increment the relativeIndex and push
+      dataObj[protocolName].push({value[0]: tx[key]})
     }
   }
 
@@ -202,8 +218,9 @@ That should look like a nice transformed response:
     {"encoding": "utf8"}
   ],
   "MAP": [
+    {"cmd": "SET"},
     {"key": "url"},
-    {"value": "https://twitter.com/"}
+    {"val": "https://twitter.com/"}
   ],
   "AUTHOR": [
     {"algo": "ecdsa"}, 
@@ -290,7 +307,7 @@ Memo
 0x6d04	txhash(32)
 
 MAP
-MAP 'like' 'true' tx <txhash>
+MAP SET 'like' 'true' tx <txhash>
 ```
 
 Set your profile
@@ -317,8 +334,8 @@ Follow user	0x6d06	address(35)
 Unfollow user	0x6d07	address(35)		
 
 MAP
-MAP 'follow.user' <address>
-MAP 'unfollow.user' <address>
+MAP SET 'follow.user' <address>
+MAP SET 'unfollow.user' <address>
 ```
 
 Follow / unfollow topic
@@ -328,8 +345,8 @@ Topic follow	0x6d0d	<topic_name>(variable)
 Topic unfollow	0x6d0e	<topic_name>(variable)	
 
 MAP
-MAP 'follow.topic' <topic_name>
-MAP 'unfollow.topic' <topic_name>
+MAP SET 'follow.topic' <topic_name>
+MAP SET 'unfollow.topic' <topic_name>
 
 ```
 ## Attach Content
@@ -341,7 +358,7 @@ Post
   0x6d02  <message>(217)	
 
   MAP
-  B <message> <content-type> <encoding> | MAP 'post' 'post'
+  B <message> <content-type> <encoding> | MAP SET 'post' 'post'
 ```
 
 Reply to Tx
@@ -350,7 +367,7 @@ Reply to Tx
   0x6d03  <txhash>(32)  message(184)	
 
   MAP
-  B <message> <content-type> <encoding> | MAP 'reply' <txhash> | AUTHOR_IDENTITY
+  B <message> <content-type> <encoding> | MAP SET 'reply' <txhash> | AUTHOR_IDENTITY
 ```
 
 Repost
@@ -359,7 +376,7 @@ Repost
   0x6d0b  <txhash>  <message>
 
   MAP
-  B <message> <content-type> <encoding> | MAP 'repost' <txhash> 
+  B <message> <content-type> <encoding> | MAP SET 'repost' <txhash> 
 ```
 
 Topic Post
@@ -375,27 +392,27 @@ Topic Post
 
 Comment on a URL "anonymously"
 ```
-B <message> <content-type> <encoding> | MAP url http://google.com
+B <message> <content-type> <encoding> | MAP SET url http://google.com
 ```
 
 Comment with an identity
 ```
-B <message> <content-type> <encoding> | MAP url http://google.com | AUTHOR_IDENTITY
+B <message> <content-type> <encoding> | MAP SET url http://google.com | AUTHOR_IDENTITY
 ```
 
 Attach a picture to a geolocation
 ```
-B <image> <content-type> <encoding> | MAP 'coordinates.lat' <latitude> 'coordinates.lng' <latitude> 'coordinates.alt' <altitude>
+B <image> <content-type> <encoding> | MAP SET 'coordinates.lat' <latitude> 'coordinates.lng' <latitude> 'coordinates.alt' <altitude>
 ```
 
 Comment on a phone number
 ```
-B <message> <content-type> <encoding> | MAP 'phone.country_code' <country_code> 'phone.number' <phone_number>
+B <message> <content-type> <encoding> | MAP SET 'phone.country_code' <country_code> 'phone.number' <phone_number>
 ```
 
 Comment on a UPC code
 ```
-B <message> <content-type> <encoding> | MAP 'upc' <upc_code>
+B <message> <content-type> <encoding> | MAP SET 'upc' <upc_code>
 ```
 
 # SCRIPT SCHEMA
@@ -418,7 +435,7 @@ We can define the protocol name as well as the field names. v1 of script scema d
 
 Then register your schema on chain...
 
-    `OP_RETURN MAP 'appname.schema' 'b://txid' | AUTHOR_IDENTITY`
+    `OP_RETURN MAP SET 'appname.schema' 'b://txid' | AUTHOR_IDENTITY`
 
 ## Querying NameSpaces
 Thanks to Script Schema + A custom BitDB Planaria, we can create an api that allows you to query by protocol and field names. It can also pre-process identity signatures to make sure you only index transactions with valid signature identity, so your frontend doesnt need to do the validation work.
