@@ -14,6 +14,7 @@ MAP
 - map a comment to a url
 - map an action to a txhash (like, repost, or flag a comment)
 - map a photo to a geolocation
+- map a 'type' to some data (this data is a 'post')
 - map ______ to a _______
 
 #### PROTOCOL CHAINING
@@ -25,6 +26,7 @@ MAP is designed to be chained together with other OP_RETURN micro-protocols. The
 More on protocol piping:
 https://github.com/unwriter/Bitcom/issues/2
 
+# Examples
 ## SET: Comment on a URL
 Here is the full piped OP_RETURN sequence for mapping B data to a global ID.
 
@@ -70,7 +72,8 @@ To delete one of the keys->value mappings from the example above.
 'DELETE'
 'coolapp.profile.name'
 ```
- 
+
+# Concepts
 ## Keys are Namespaces
 
 Since the keyspace is shared, you can either prefix your keys with a unique identifier, or operate in the global space, sharing that dataset and inheriting the emergent schema. Sharing the global naimspace can be useful when it is intended to be shared among many apps.
@@ -163,7 +166,7 @@ MAP 'follow.topic' <topic_name>
 MAP 'unfollow.topic' <topic_name>
 
 ```
-
+## Attach Content
 #### Memo Commands with Content
 
 Post
@@ -172,7 +175,7 @@ Post
   0x6d02  <message>(217)	
 
   MAP
-  B <message> <content-type> <encoding> | MAP 'post' <message>
+  B <message> <content-type> <encoding> | MAP 'post' 'psot'
 ```
 
 Reply to Tx
@@ -181,7 +184,7 @@ Reply to Tx
   0x6d03  <txhash>(32)  message(184)	
 
   MAP
-  B <message> <content-type> <encoding> | MAP 'reply' <txhash>
+  B <message> <content-type> <encoding> | MAP 'reply' <txhash> | AUTHOR_IDENTITY
 ```
 
 Repost
@@ -190,7 +193,7 @@ Repost
   0x6d0b  <txhash>  <message>
 
   MAP
-  B <message> <content-type> <encoding> | MAP 'repost' <txhash>
+  B <message> <content-type> <encoding> | MAP 'repost' <txhash> 
 ```
 
 Topic Post
