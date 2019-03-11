@@ -1,7 +1,10 @@
 # Magic Attribute Protocol
 ### A system for mapping arbitrary hyper media to a global identifier, or anything.
 
-## PROTOCOL
+Prefix: *1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5*
+
+## Usage
+
 ```
 <OP_RETURN | <input>>
 MAP
@@ -175,7 +178,7 @@ Post
   0x6d02  <message>(217)	
 
   MAP
-  B <message> <content-type> <encoding> | MAP 'post' 'psot'
+  B <message> <content-type> <encoding> | MAP 'post' 'post'
 ```
 
 Reply to Tx
