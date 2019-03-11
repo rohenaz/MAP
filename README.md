@@ -148,7 +148,7 @@ _Later this can be done automatically by a planaria node or js library_
       {"algo": "string"},
       {"pubkey": "string"},
       {"sig":"string"}
-    }]
+    ]
   }
 
   // query bitdb
