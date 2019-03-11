@@ -116,20 +116,6 @@ BitQuery for MAP data for a given url from a given author
 }
 ```
 
-my goal is to make this:
-
-{
-  B: {
-
-  },
-  MAP: {
-
-  },
-  AUTHOR: {
-
-  }
-}
-
 Processing the Output
 ```javascript
   let protocolNames = {
@@ -138,7 +124,25 @@ Processing the Output
     "15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva": "AUTHOR_IDENTITY"
   }
 
+  let schema = {
+    "B": [
+      {"content": "string"},
+      {"content-type": "string"},
+      {"encoding": "string"}
+    ],
+    "MAP": [
+      {"key": "string"},
+      {"val": "string"},
+    ],
+    "AUTHOR": [
+      {"algo": "string"},
+      {"pubkey": "string"},
+      {"sig":"string"}
+    }]
+  }
+
   let response = fetchBitDB(query)
+
   let breaks = []
   let data = u.concat(c)
   let dataObj = {}
@@ -151,7 +155,7 @@ Processing the Output
 
     // Flag for handling pipes
     let setProtocol = true
-
+    let relativeIndex = 0
     // Loop over op_return pushdatas
     for (key of Object.keys(tx)) {
       if (setProtocol) {
@@ -167,14 +171,39 @@ Processing the Output
         setProtocol = true
         continue
       }
-      // push the value to the current
-      dataObj[protocolName].push(tx[key])
+
+      // If its the protocol prefix, we dont need it now...
+      if (tx[key] === protocolName) {
+        continue
+      }
+
+      // push the value to the current schema key
+      dataObj[protocolName].push({Object.keys(schemas[protocolName][relativeIndex++])[0]: tx[key]})
     }
   }
 
+  // Now my object is ready
+  console.log(dataObj)
 
 ```
-
+That should look like a nice transformed response:
+```json
+{
+  "B": [
+    {"content": "# Hello small world"},
+    {"content-type": "text/markdown"},
+    {"encoding": "utf8"}
+  ],
+  "MAP": [
+    {"key": "url"},
+    {"value": "https://twitter.com/"}
+  ],
+  "AUTHOR": [
+    {"algo": "ecdsa"}, 
+    {"pubkey": "1HQ8momxTp9MYkzDLy9bFMUQgnba189qZE"}
+  ]
+}
+```
 ## SET Multiple Keys at once
 Keys and values can be repeated to set multiple attributes at once:
 ```
