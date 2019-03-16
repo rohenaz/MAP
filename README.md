@@ -17,7 +17,7 @@ MAP
 - map a comment to a url
 - map an action to a txhash (like, repost, or flag a comment)
 - map a photo to a geolocation
-- map a 'type' to some data (this data is a 'post')
+- map a 'type' to some data (this is a 'post' or a 'reply')
 - map ______ to a _______
 
 #### PROTOCOL CHAINING
@@ -34,7 +34,7 @@ More on Autor Identity Protocol:
 
 # Examples
 ## SET
-In this example we will use `SET` to comment on a URL with an identity (not using the sender address as the identity's public key). Here is the full piped OP_RETURN sequence for mapping B data to a global ID, `url` = `http://map.sv`.
+In this example we will use `SET` to comment on a URL with an identity (not using the sender address as the identity's public key). Here is a simple piped OP_RETURN sequence for mapping B data to a global ID, `url` = `http://map.sv`.
 
 ```
 OP_RETURN B | MAP SET 'url' 'https://map.sv' | AUTHOR_IDENTITY_PROTOL
@@ -50,6 +50,7 @@ text/markdown
 utf8
 |
 1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5 (MAP)
+'SET'
 'url'
 'https://map.sv'
 |
@@ -60,42 +61,9 @@ ecdsa
 <signature>
  ```
 
-BitQuery for MAP data for a given url
+Constructing a BitQuery for MAP data for a given url still assumes a 'fixed protocol' for now, but soon we will release some tools for searching 'relative to protocol'. There are some projects in the works to make querying / working with this protocol much nicer in the future.
 
-```json
-{
-  "v": 3,
-  "q": {
-    "find": {
-      "$and": [
-        {"$text": {"$search": "\"1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5\" \"SET\" \"url\" \"https:\/\/map.sv\""}}
-      ]
-    },
-    "limit": 10
-  }
-}
-```
-
-BitQuery for MAP data for a given url from a given author
-
-```json
-{
-  "v": 3,
-  "q": {
-    "find": {
-      "$and": [
-        {"$text": {"$search": "\"1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5\" \"SET\" \"url\" \"https:\/\/twitter.com\" \"15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva\" \"1HQ8momxTp9MYkzDLy9bFMUQgnba189qZE\""}}
-      ]
-    },
-    "limit": 1
-  },
- "r": {
-    "f": "[.[] | .out[0] ]"
-  }
-}
-```
-
-The response would look something like this:
+A response from BITDB for a comment on a URL would look something like this:
 ```json
 {
   "c": [{
@@ -122,6 +90,7 @@ The response would look something like this:
 
 Transforming the Output
 
+By defining a protocol schema, we can transform a bitquery response and make the output really nice also.
 _Later this can be done automatically by a planaria node or js library_
 
 ```javascript
@@ -150,64 +119,6 @@ _Later this can be done automatically by a planaria node or js library_
       {"sig":"string"}
     ]
   }
-
-  // query bitdb
-  let response = fetchBitDB(query)
-
-  // combine confirmed and unconfirmed transactions
-  let data = u.concat(c)
-
-  // This will be out nicely formatted response object
-  let dataObj = {}
-
-  // Loop over transactions
-  for (let x = 0; x < data.length; x++) {
-    let tx = data[0]
-
-    // We always know what the first protocol is, it's always in s1
-    let procolName = protocolSchema[tx.s1]
-
-    // Flag for handling pipes
-    let relativeIndex = 0
-
-    // Loop over op_return pushdatas
-    for (key of Object.keys(tx)) {
-
-      if (!relativeIndex) {
-        // here we could check schema and assign the appropriate encoding for each value
-        // ours are all strings... so we just push them into an array
-        dataObj[protocolName] = []
-      }
-
-      // if the value is a pipe, set the name again and continue without pushing
-      if (tx[key] === '|') {
-        relativeIndex = 0
-        continue
-      }
-
-      // If its the protocol prefix, we dont need it now...
-      if (tx[key] === protocolName) {
-        continue
-      }
-
-      // get the key,value pair from this query schema
-      let value = Object.keys(querySchema[protocolName][relativeIndex++])
-
-      if (value instanceof Array) {
-        for (let push of value) {
-          // increment the relativeIndex and push
-          dataObj[protocolName].push({push[0]: tx[key]})
-        }
-        continue
-      }
-      // increment the relativeIndex and push
-      dataObj[protocolName].push({value[0]: tx[key]})
-    }
-  }
-
-  // Now my object is ready
-  console.log(dataObj)
-
 ```
 That should look like a nice transformed response:
 ```json
@@ -228,6 +139,7 @@ That should look like a nice transformed response:
   ]
 }
 ```
+
 ## SET Multiple Keys at once
 Keys and values can be repeated to set multiple attributes at once:
 ```
@@ -242,9 +154,11 @@ more detailed example:
 ```
 1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5 (MAP)
 SET
-'coolapp.profile.link'
+'app'
+'my cool app'
+'profile.link'
 'http://mywebsite.com'
-'coolapp.profile.name'
+'profile.name'
 'username123'
 ```
 
@@ -253,7 +167,7 @@ To delete one of the keys->value mappings from the example above.
 ```
 1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5 (MAP)
 'DELETE'
-'coolapp.profile.name'
+'profile.name'
 ```
 
 # Concepts
@@ -437,7 +351,7 @@ Then register your schema on chain...
 
     `OP_RETURN MAP SET 'appname.schema' 'b://txid' | AUTHOR_IDENTITY`
 
-## Querying NameSpaces
+## Querying NameSpaces (coming soon)
 Thanks to Script Schema + A custom BitDB Planaria, we can create an api that allows you to query by protocol and field names. It can also pre-process identity signatures to make sure you only index transactions with valid signature identity, so your frontend doesnt need to do the validation work.
 
 `protocol: { field: xxx }`
@@ -459,7 +373,7 @@ Query for all url posts from a particular user:
 }
 ```
 
-Find all likes mapped to a geolocation
+Find all likes/dislikes mapped to a geolocation
 ```
 {
   q: {
@@ -473,125 +387,6 @@ Find all likes mapped to a geolocation
          }]
       }
     }
-  }
-}
-```
-
-## A Complete Complex Example: Creating Polls
-
-This is how memo protocol deals with polls. As you can see it takes a few transactions to create a poll:
-
-| Command         | Prefix | ARG1                | ARG2              | ARG3              |
-|-----------------|--------|---------------------|-------------------|-------------------|
-| Create poll     | 0x6d10 | `<poll_type>`(1)    | `<option_count>`  | `<question>`(209) |
-| Add Poll Option | 0x6d13 | `<poll_txhash>`(32) | `<option>` (184)  |                   |
-| Poll vote       | 0x6414 | `<poll_txhash>`(32) | `<comment>` (184) |                   |
-
-
-This is how we could do them with B, MAP, and AUTHOR in 1 transaction:
-
-```
-B
-'best cheese?'                   <- poll (question)
-'text/markdown'
-'utf8'
-|
-MAP
-'poll.type'
-<'one'|'many'>
-'poll.options'
-'cheddar'
-'poll.options'
-'swiss'
-'poll.options'
-'xrp'
-'poll.options'
-'xmr'
-'poll.options'
-'gouda'
-|
-AUTHOR_IDENTITY
-<version>
-<algorithm = ecdsa|pgp|... >
-<pubkey>
-<signature>
-```
-
-Technically you could add the poll options as an array and process 
-
-And this is how we can query for the relavent data:
-```
-{
-  q: {
-    find: {
-      map: {
-        key: 'poll'
-      }
-    }
-  }
-}
-```
-
-and you should get a response like this:
-```
-[{
-  b: {
-    content: 'best cheese?',
-    content-type: 'text/markdown',
-    encoding: 'utf8'
-  },
-  map:{
-    'poll.type': 'one'
-    'poll.options': ['cheddar'
-      'cheddar',
-      'swiss',
-      'xrp',
-      'xmr',
-      'gouda'
-    ]
-  },
-  author: [{
-    <pubkey>
-  }]
-}, ...]
-```
-
-#### Vote on a poll
-```
-OP_RETURN
-MAP
-'poll.vote.tx'
-<poll_txid>
-'poll.vote.option'
-<option_index>
-```
-
-And to find votes for a poll:
-```
-{
-  q: {
-    find: {
-      map: {
-        key: 'poll.vote.tx',
-        value: <poll_txid>
-      }
-    }
-  }
-}
-```
-
-and you should get a response with many transactions, each looking like this:
-```
-{
-  map: {
-    poll: {
-      vote.option: '1',
-      vote.option: '2'
-    }
-  },
-  author: {
-    pubkey: <pubkey>,
-    ...
   }
 }
 ```
