@@ -26,11 +26,14 @@ MAP is designed to be chained together with other OP_RETURN micro-protocols. The
 
     B | MAP | AUTHOR_IDENTITY
 
+More about B protocol
+- https://github.com/unwriter/B
+
 More on protocol piping:
 - https://github.com/unwriter/Bitcom/issues/2
 
 More on Autor Identity Protocol:
-- https://??????
+- https://github.com/BitcoinFiles/AUTHOR_IDENTITY_PROTOCOL
 
 # Examples
 ## SET
@@ -214,6 +217,7 @@ Some global identifiers have more than one value...
 If the above example is namespace as a noun, in this example we show a namespace can be used as a verb too. Actions usually dont need input data. Instead you act upon something that already exists. These begin new op_return chains instead of taking input from a previous protocol. This is useful if all you need is a single key to begin the chain, such as 'like'.
 
 #### Comparison to Memo Protocol for Actions
+Please note: These are not intended to limit your imagination with how to organize and manage the keys you use by your app, but to give examples of one way you could do it. There are many viable methods for each of these cases:
 
 Like something by txid:
 ```
@@ -272,7 +276,7 @@ Post
   0x6d02  <message>(217)	
 
   MAP
-  B <message> <content-type> <encoding> | MAP SET 'post' 'post'
+  B <message> <content-type> <encoding> | MAP SET 'type' 'post'
 ```
 
 Reply to Tx
@@ -281,7 +285,7 @@ Reply to Tx
   0x6d03  <txhash>(32)  message(184)	
 
   MAP
-  B <message> <content-type> <encoding> | MAP SET 'reply' <txhash> | AUTHOR_IDENTITY
+  B <message> <content-type> <encoding> | MAP SET 'type' 'reply' 'tx' <txhash> | AUTHOR_IDENTITY
 ```
 
 Repost
@@ -290,7 +294,7 @@ Repost
   0x6d0b  <txhash>  <message>
 
   MAP
-  B <message> <content-type> <encoding> | MAP SET 'repost' <txhash> 
+  B <message> <content-type> <encoding> | MAP SET 'type' 'repost' 'tx'  <txhash> 
 ```
 
 Topic Post
@@ -299,19 +303,19 @@ Topic Post
   0x6d0c  topic_name(variable)  message(214 - topic length)	
 
   MAP
-  B <message> <content-type> <encoding> | 'topic' <topic_name>
+  B <message> <content-type> <encoding> | 'type' 'post' 'topic' <topic_name>
 ```
 
 ## MAP is Powerful - More Use Cases
 
 Comment on a URL "anonymously"
 ```
-B <message> <content-type> <encoding> | MAP SET url http://google.com
+B <message> <content-type> <encoding> | MAP SET 'type' 'comment' 'url' http://google.com
 ```
 
 Comment with an identity
 ```
-B <message> <content-type> <encoding> | MAP SET url http://google.com | AUTHOR_IDENTITY
+B <message> <content-type> <encoding> | MAP SET 'type' 'comment' 'url' http://google.com | AUTHOR_IDENTITY
 ```
 
 Attach a picture to a geolocation
@@ -326,7 +330,7 @@ B <message> <content-type> <encoding> | MAP SET 'phone.country_code' <country_co
 
 Comment on a UPC code
 ```
-B <message> <content-type> <encoding> | MAP SET 'upc' <upc_code>
+B <message> <content-type> <encoding> | MAP SET 'type' 'comment' 'upc' <upc_code>
 ```
 
 # SCRIPT SCHEMA
