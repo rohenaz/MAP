@@ -170,7 +170,7 @@ Some global identifiers have more than one value...
 If the above example is namespace as a noun, in this example we show a namespace can be used as a verb too. Actions usually dont need input data. Instead you act upon something that already exists. These begin new op_return chains instead of taking input from a previous protocol. This is useful if all you need is a single key to begin the chain, such as 'like'.
 
 #### Comparison to Memo Protocol for Actions
-Please note: These are not intended to limit your imagination with how to organize and manage the keys you use by your app, but to give examples of one way you could do it. There are many viable methods for each of these cases:
+Please note: These are not intended to limit your imagination with how to organize the keysyour app uses, but to give some basic examples of how you _could_ do it. There are many viable methods for each of these cases:
 
 Like something by txid:
 ```
