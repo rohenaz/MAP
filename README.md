@@ -96,59 +96,6 @@ A response from BITDB for a comment on a URL would look something like this:
 }
 ```
 
-Transforming the Output
-
-By defining a protocol schema, we can transform a bitquery response and make the output really nice also.
-_Later this can be done automatically by a planaria node or js library_
-
-```javascript
-  let protocolSchema = {
-    "19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut": "B",
-    "1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5": "MAP",
-    "15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva": "AUTHOR_IDENTITY"
-  }
-
-  let querySchema = {
-    "B": [
-      {"content": "string"},
-      {"content-type": "string"},
-      {"encoding": "string"}
-    ],
-    "MAP": [
-      {"cmd": "string"},
-      [
-        {"key": "string"},
-        {"val": "string"}
-      ]
-    ],
-    "AUTHOR": [
-      {"algorithm": "string"},
-      {"pubkey": "string"},
-      {"sig":"string"}
-    ]
-  }
-```
-That should look like a nice transformed response:
-```json
-{
-  "B": [
-    {"content": "# Hello small world"},
-    {"content-type": "text/markdown"},
-    {"encoding": "utf8"}
-  ],
-  "MAP": [
-    {"cmd": "SET"},
-    {"key": "url"},
-    {"val": "https://twitter.com/"}
-  ],
-  "AUTHOR": [
-    {"algorithm": "BITCOIN_ECDSA"},
-    {"pubkey": "1HQ8momxTp9MYkzDLy9bFMUQgnba189qZE"},
-    {"signature": <signature>}
-  ]
-}
-```
-
 ## SET Multiple Keys at once
 Keys and values can be repeated to set multiple attributes at once:
 ```
