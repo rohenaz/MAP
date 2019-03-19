@@ -261,7 +261,7 @@ Topic Post
 
 ## MAP is Powerful - More Use Cases
 
-Comment on a URL "anonymously"
+Comment on a URL without identity
 ```
 B <message> <content-type> <encoding> | MAP SET 'type' 'comment' 'url' http://google.com
 ```
