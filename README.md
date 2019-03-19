@@ -256,7 +256,7 @@ Topic Post
   0x6d0c  topic_name(variable)  message(214 - topic length)	
 
   MAP
-  B <message> <content-type> <encoding> | 'type' 'post' 'topic' <topic_name>
+  B <message> <content-type> <encoding> | MAP SET 'type' 'post' 'topic' <topic_name>
 ```
 
 ## MAP is Powerful - More Use Cases
