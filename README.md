@@ -32,7 +32,7 @@ More about B protocol
 More on protocol piping:
 - https://github.com/unwriter/Bitcom/issues/2
 
-More on Autor Identity Protocol:
+More on Author Identity Protocol:
 - https://github.com/BitcoinFiles/AUTHOR_IDENTITY_PROTOCOL
 
 # Examples
