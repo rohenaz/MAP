@@ -59,7 +59,7 @@ utf8
 |
 15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva (AUTHOR_IDENTITY)
 1
-ecdsa
+<BITCOIN_ECDSA>
 <pubkey>
 <signature>
  ```
