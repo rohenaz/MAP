@@ -122,7 +122,7 @@ _Later this can be done automatically by a planaria node or js library_
       ]
     ],
     "AUTHOR": [
-      {"algo": "string"},
+      {"algorithm": "string"},
       {"pubkey": "string"},
       {"sig":"string"}
     ]
@@ -142,7 +142,7 @@ That should look like a nice transformed response:
     {"val": "https://twitter.com/"}
   ],
   "AUTHOR": [
-    {"algorithm": "ecdsa"},
+    {"algorithm": "BITCOIN_ECDSA"},
     {"pubkey": "1HQ8momxTp9MYkzDLy9bFMUQgnba189qZE"},
     {"signature": <signature>}
   ]
