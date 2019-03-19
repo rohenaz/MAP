@@ -3,6 +3,12 @@
 
 Prefix: *1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5*
 
+## Intro
+The design goals:
+
+A simple OP_RETURN protocol for associating data in a single transaction by defining key, value pairs.
+Provide data mapping without enforcing a content or identity scheme (allow other protocols to provide this).
+
 ## Usage
 
 ```markdown
@@ -58,7 +64,6 @@ utf8
 'https://map.sv'
 |
 15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva (AUTHOR_IDENTITY)
-1
 <BITCOIN_ECDSA>
 <pubkey>
 <signature>
@@ -137,8 +142,9 @@ That should look like a nice transformed response:
     {"val": "https://twitter.com/"}
   ],
   "AUTHOR": [
-    {"algo": "ecdsa"}, 
-    {"pubkey": "1HQ8momxTp9MYkzDLy9bFMUQgnba189qZE"}
+    {"algorithm": "ecdsa"},
+    {"pubkey": "1HQ8momxTp9MYkzDLy9bFMUQgnba189qZE"},
+    {"signature": <signature>}
   ]
 }
 ```
@@ -176,7 +182,7 @@ To delete one of the keys->value mappings from the example above.
 # Concepts
 ## Keys are Namespaces
 
-Since the keyspace is shared, you can either prefix your keys with a unique identifier, or operate in the global space, sharing that dataset and inheriting the emergent schema. Sharing the global naimspace can be useful when it is intended to be shared among many apps.
+Since the keyspace is shared, you can either prefix your keys with a unique identifier, or operate in the global space, sharing that dataset and inheriting the emergent schema. Sharing the global namespace can be useful when it is intended to be shared among many apps.
 
   Potential Namespaces for Global Identifiers
 
