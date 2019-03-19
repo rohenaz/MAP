@@ -6,8 +6,8 @@ Prefix: *1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5*
 ## Intro
 The design goals:
 
-A simple OP_RETURN protocol for associating data in a single transaction by defining key, value pairs.
-Provide data mapping without enforcing a content or identity scheme (allow other protocols to provide this).
+- A simple OP_RETURN protocol for associating data in a single transaction by defining key, value pairs.
+- Provide data mapping without enforcing a content or identity scheme (allow other protocols to provide this).
 
 ## Usage
 
