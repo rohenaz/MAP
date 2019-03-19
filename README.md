@@ -35,7 +35,7 @@ MAP is designed to be chained together with other OP_RETURN micro-protocols. The
 More about B protocol
 - https://github.com/unwriter/B
 
-More on protocol piping:
+More on protocol pipeline:
 - https://github.com/unwriter/Bitcom/issues/2
 
 More on Author Identity Protocol:
