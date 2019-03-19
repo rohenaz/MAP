@@ -64,7 +64,7 @@ utf8
 'https://map.sv'
 |
 15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva (AUTHOR_IDENTITY)
-<BITCOIN_ECDSA>
+'BITCOIN_ECDSA'
 <pubkey>
 <signature>
  ```
