@@ -26,7 +26,7 @@ MAP
 - map a 'type' to some data (this is a 'post' or a 'reply')
 - map ______ to a _______
 
-#### PROTOCOL CHAINING
+#### PROTOCOL PIPELINE
 
 MAP is designed to be chained together with other OP_RETURN micro-protocols. The input stream flows from the left and can be piped like unix commands. We chain content from B protocol, and map it to some global identifier (txhash, url etc), and finally sign that using the Author Identity protocol:
 
