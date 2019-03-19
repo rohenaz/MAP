@@ -3,10 +3,17 @@
 
 Prefix: *1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5*
 
+Authors: Satchmo, Attila Aros
+
+Thanks to Unwriter for his input and support.
+
 ## Intro
+
 The design goals:
 
 - A simple OP_RETURN protocol for associating data in a single transaction by defining key, value pairs.
+- A flexible protocol suitable for many applications
+- Compatible with faucets, and other situations where the input address does not represent the author's public identity
 - Provide data mapping without enforcing a content or identity scheme (allow other protocols to provide this).
 
 ## Usage
