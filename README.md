@@ -50,10 +50,10 @@ More on Author Identity Protocol:
 
 # Examples
 ## SET
-In this example we will use `SET` to comment on a URL with an identity (not using the sender address as the identity's public key). Here is a simple piped OP_RETURN sequence for mapping B data to a global ID, `url` = `http://map.sv`.
+In this example we will use `SET` to comment on a URL with an identity (not using the sender address as the identity's public key). Here is a simple piped OP_RETURN sequence for mapping B data to a global ID, `url` = `https://map.sv`.
 
 ```
-OP_RETURN B | MAP SET 'url' 'https://map.sv' | AUTHOR_IDENTITY_PROTOL
+OP_RETURN B | MAP SET 'url' 'https://map.sv' | AUTHOR_IDENTITY_PROTOCOL
 ```
 
 A more detailed view of the same transaction. Each line here is a new pushdata:
@@ -120,7 +120,7 @@ SET
 'app'
 'my cool app'
 'profile.link'
-'http://mywebsite.com'
+'https://mywebsite.com'
 'profile.name'
 'username123'
 ```
@@ -174,10 +174,10 @@ Some global identifiers have more than one value...
     
 
 ## Keys are Actions
-If the above example is namespace as a noun, in this example we show a namespace can be used as a verb too. Actions usually dont need input data. Instead you act upon something that already exists. These begin new op_return chains instead of taking input from a previous protocol. This is useful if all you need is a single key to begin the chain, such as 'like'.
+If the above example is namespace as a noun, in this example we show a namespace can be used as a verb too. Actions usually don't need input data. Instead you act upon something that already exists. These begin new op_return chains instead of taking input from a previous protocol. This is useful if all you need is a single key to begin the chain, such as 'like'.
 
 #### Comparison to Memo Protocol for Actions
-Please note: These are not intended to limit your imagination with how to organize the keysyour app uses, but to give some basic examples of how you _could_ do it. There are many viable methods for each of these cases:
+Please note: These are not intended to limit your imagination with how to organize the keys your app uses, but to give some basic examples of how you _could_ do it. There are many viable methods for each of these cases:
 
 Like something by txid:
 ```
@@ -270,12 +270,12 @@ Topic Post
 
 Comment on a URL without identity
 ```
-B <message> <content-type> <encoding> | MAP SET 'type' 'comment' 'url' http://google.com
+B <message> <content-type> <encoding> | MAP SET 'type' 'comment' 'url' https://google.com
 ```
 
 Comment with an identity
 ```
-B <message> <content-type> <encoding> | MAP SET 'type' 'comment' 'url' http://google.com | AUTHOR_IDENTITY
+B <message> <content-type> <encoding> | MAP SET 'type' 'comment' 'url' https://google.com | AUTHOR_IDENTITY
 ```
 
 Attach a picture to a geolocation
