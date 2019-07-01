@@ -3,9 +3,9 @@
 
 Prefix: *1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5*
 
-Authors: Satchmo, Attila Aros
+Authors: [Satchmo](https://github.com/rohenaz?affiliate=$satchmo), [Attila Aros](https://github.com/attilaaf?affiliate=$attila)
 
-Thanks to Unwriter for his input and support.
+Thanks to [Unwriter](https://github.com/unwriter) for his input and support.
 
 ## Intro
 
@@ -39,14 +39,9 @@ MAP is designed to be chained together with other OP_RETURN micro-protocols. The
 
     B | MAP | AUTHOR_IDENTITY
 
-More about B protocol
-- https://github.com/unwriter/B
-
-More on protocol pipeline:
-- https://github.com/unwriter/Bitcom/issues/2
-
-More on Author Identity Protocol:
-- https://github.com/BitcoinFiles/AUTHOR_IDENTITY_PROTOCOL
+- Read more about [B protocol]( https://github.com/unwriter/B)
+- Read more about [protocol pipeline](https://github.com/unwriter/Bitcom/issues/2) 
+- Read more about [Author Identity Protocol](https://github.com/BitcoinFiles/AUTHOR_IDENTITY_PROTOCOL)
 
 # Examples
 ## SET
