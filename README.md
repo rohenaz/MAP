@@ -147,9 +147,11 @@ SELECT
 ?...
 ```
 
+Note, SELECT should be used only once per instruction set since it sets the context for the subsequent commands. 
+
 # Command Separator
 
-Use the command separator `:::` to declare multiple MAP commands in a single transaction.
+Use the command separator `:::` to declare multiple MAP commands in a single transaction. These commands are considered to be part of the same instruction set.
 
 ```markdown
 MAP
@@ -196,6 +198,24 @@ More on protocol pipeline:
 
 More on Author Identity Protocol:
 - https://github.com/BitcoinFiles/AUTHOR_IDENTITY_PROTOCOL
+
+#### Multiple Outputs
+
+It was not previously possible to include more than one transaction output containing `OP_RETURN`. With an update to the Bitcoin SV node software coming later this year (2019), transactions with multiple OP_RETURN outputs will be considered valid.
+
+This allows the protocol pipelining to have a more specific meaning, and MAP instructions to be spread across multiple outputs when appropriate.
+
+for example, we might have written a transaction that updates the values of multiple previously defined MAP instruction sets:
+
+`MAP SELECT <tx1> DELETE key val1 val2 ::: REMOVE key4 | MAP SELECT <tx2> DELETE key val1 val2 ::: REMOVE key4`
+
+Since the pipe is used merely as a protocol separator in this example and has no "data flow", we can instead break the instruction sets into multiple outputs:
+
+output1: 
+`MAP SELECT <tx1> DELETE key val1 val2 ::: REMOVE key4`
+
+output2:
+`MAP SELECT <tx2> DELETE key val1 val2 ::: REMOVE key4`
 
 # Examples
 
