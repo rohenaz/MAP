@@ -35,14 +35,13 @@ The context for these is set by the browser session and current http domain. We 
 
 In web programming, your `window` is the global context. Since Bitcoin is a giant shared context, you need to specify where you are in the graph.
 
-| JS                                | MAP             |
-| -----------                       | -----------     |
-| localStorage.setItem(key, value)  | SET key value   |
-| localStorage.removeItem(key)      | REMOVE key      |
-| Set.add(key, value)               | ADD key, value  |
-| Set.delete(key)                   | DELETE key      |
-| window                            | SELECT `txid`   |
-| localStorage.clear() / Set.clear()| CLEAR `txid`    |
+| JS                                    | MAP               |
+| -----------                           | -----------       |
+| localStorage.setItem(key, value)      | SET key value     |
+| localStorage.removeItem(key)          | REMOVE key        |
+| let key = new Set(); key.add(value)   | ADD key, value    |
+| key.delete(value)                     | DELETE key, value |
+| localStorage.clear() / Set.clear()    | CLEAR `txid`      |
 
 # Usage
 
@@ -111,12 +110,13 @@ ADD
 
 #### DELETE
 
-Used in conjunction with SELECT. Remove one or more values from a list. Not needed when using metanet protocol.
+Used in conjunction with SELECT. Remove one or more values from a list. (Not needed when using metanet protocol.)
 
 ```markdown
 SELECT
 <txid>
 DELETE
+<key>
 <value> ...
 ```
 
@@ -196,55 +196,6 @@ More on protocol pipeline:
 
 More on Author Identity Protocol:
 - https://github.com/BitcoinFiles/AUTHOR_IDENTITY_PROTOCOL
-
-
-## MAP + MetaNet
-
-Bmapjs can convert BitcoinSchema declarative syntax for creating metanet enabled bitcoin transactions.
-
-```json
-{
-  "_bitcoinSchemaVersion": "0.0.1",
-  "profile": {
-    "name": "someone",
-    "nicknames": ["joe","fred"]
-  }
-}
-```
-
-yields:
-
-Tx 1 (Root node)
-```markdown
-OP_FALSE
-OP_RETURN
-META
-null
-|
-MAP
-SET
-_nodeName
-profile
-```
-
-Tx 2 (child node)
-```markdown
-  OP_FALSE
-  OP_RETURN
-  META
-  <address>
-  <txid of root node>
-  |
-  MAP
-  SET
-  name
-  someone
-  :::
-  ADD
-  nicknames
-  joe
-  fred
-```
 
 # Examples
 
